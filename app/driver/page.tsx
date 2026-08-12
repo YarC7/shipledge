@@ -1,8 +1,11 @@
 import { deleteInvoice, getMyInvoices } from "@/app/actions/invoices"
-import { Button } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Pencil, Plus, Trash2 } from "lucide-react"
+import { DeleteInvoiceButton } from "@/components/driver/delete-invoice-button"
+import { EditInvoiceLink } from "@/components/driver/edit-invoice-link"
+import { Plus } from "lucide-react"
 import Link from "next/link"
+import { cn } from "@/lib/utils"
 
 function formatDate(value: string) {
   return new Date(value + "T00:00:00").toLocaleDateString("vi-VN", {
@@ -34,12 +37,10 @@ export default async function DriverHomePage() {
             {invoices.length} hóa đơn &middot; {monthTotal.toLocaleString("vi-VN")} ₫ tháng này
           </p>
         </div>
-        <Button asChild className="gap-2">
-          <Link href="/driver/new">
-            <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">Tạo mới</span>
-          </Link>
-        </Button>
+        <Link href="/driver/new" className={cn(buttonVariants({ variant: "default", size: "default" }), "gap-2")}>
+          <Plus className="h-4 w-4" />
+          <span className="hidden sm:inline">Tạo mới</span>
+        </Link>
       </div>
 
       {invoices.length === 0 ? (
@@ -67,26 +68,10 @@ export default async function DriverHomePage() {
                   <TableCell className="text-right font-mono">{Number(inv.total).toLocaleString("vi-VN")} ₫</TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <Button asChild size="icon" variant="ghost">
-                        <Link href={`/driver/${inv.id}/edit`}>
-                          <Pencil className="h-4 w-4" />
-                          <span className="sr-only">Chỉnh sửa</span>
-                        </Link>
-                      </Button>
+                      <EditInvoiceLink id={inv.id} />
                       <form action={handleDelete}>
                         <input type="hidden" name="id" value={inv.id} />
-                        <Button
-                          type="submit"
-                          size="icon"
-                          variant="ghost"
-                          className="text-destructive hover:text-destructive"
-                          onClick={(e) => {
-                            if (!confirm("Xóa hóa đơn này?")) e.preventDefault()
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          <span className="sr-only">Xóa</span>
-                        </Button>
+                        <DeleteInvoiceButton />
                       </form>
                     </div>
                   </TableCell>
