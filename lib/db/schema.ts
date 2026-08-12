@@ -5,6 +5,7 @@ import { boolean, date, integer, numeric, pgTable, serial, text, timestamp } fro
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
+  username: text("username").notNull().unique(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("emailVerified").notNull().default(false),
   image: text("image"),

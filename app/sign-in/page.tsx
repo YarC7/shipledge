@@ -11,17 +11,13 @@ export default async function SignInPage() {
 
   return (
     <main className="flex min-h-dvh items-center justify-center bg-background px-4 py-10">
-      <div className="w-full max-w-sm">
+      <div className="w-full max-w-md">
         <div className="mb-6 flex items-center gap-2 text-foreground">
-          <span className="flex h-9 w-9 items-center justify-center rounded-[8px] bg-foreground font-mono text-sm font-bold text-background">
-            SL
-          </span>
           <span className="text-lg font-semibold tracking-tight">ShipLedger</span>
         </div>
         <Card>
           <CardHeader>
             <CardTitle className="text-xl">Đăng nhập</CardTitle>
-            <CardDescription>Nhập thông tin đăng nhập để truy cập bảng điều khiển.</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <AuthForm mode="sign-in" />

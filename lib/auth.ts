@@ -22,6 +22,11 @@ export const auth = betterAuth({
         defaultValue: "driver",
         input: false,
       },
+      username: {
+        type: "string",
+        required: true,
+        unique: true,
+      },
     },
   },
   trustedOrigins: [

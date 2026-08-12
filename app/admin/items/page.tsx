@@ -5,7 +5,7 @@ export default async function AdminItemsPage() {
   const items = await getCostItems()
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 text-base">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-balance">Chi phí</h1>
         <p className="mt-1 text-sm text-muted-foreground">

@@ -8,7 +8,7 @@ export default async function EditInvoicePage({ params }: { params: Promise<{ id
   if (!data) redirect("/driver")
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-6">
+    <div className="mx-auto flex max-w-2xl flex-col gap-6 text-base">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Chỉnh sửa hóa đơn</h1>
         <p className="mt-1 text-sm text-muted-foreground">Cập nhật thông tin chuyến hàng và chi phí.</p>

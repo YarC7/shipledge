@@ -1,20 +1,23 @@
 "use client"
 
-import { claimFirstAdmin } from "@/app/actions/auth"
+import { claimFirstAdmin, lookupUserByUsername } from "@/app/actions/auth"
 import { authClient } from "@/lib/auth-client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Eye, EyeOff } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
   const router = useRouter()
   const [name, setName] = useState("")
+  const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const isSignUp = mode === "sign-up"
 
@@ -25,7 +28,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
 
     try {
       if (isSignUp) {
-        const { data, error } = await authClient.signUp.email({ email, password, name })
+        const { data, error } = await authClient.signUp.email({ email, password, name, username })
         if (error) {
           setError(error.message ?? "Không thể tạo tài khoản")
           setLoading(false)
@@ -38,9 +41,15 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
           return
         }
       } else {
-        const { error } = await authClient.signIn.email({ email, password })
+        const foundEmail = await lookupUserByUsername(username)
+        if (!foundEmail) {
+          setError("Tên đăng nhập không tồn tại")
+          setLoading(false)
+          return
+        }
+        const { error } = await authClient.signIn.email({ email: foundEmail, password })
         if (error) {
-          setError(error.message ?? "Email hoặc mật khẩu không đúng")
+          setError(error.message ?? "Tên đăng nhập hoặc mật khẩu không đúng")
           setLoading(false)
           return
         }
@@ -54,35 +63,59 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-xl">
       {isSignUp && (
         <div className="flex flex-col gap-2">
-          <Label htmlFor="name">Họ và tên</Label>
+          <Label htmlFor="name" className="text-base">Họ và tên</Label>
           <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required autoComplete="name" />
         </div>
       )}
       <div className="flex flex-col gap-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="username" className="text-base">Tên đăng nhập</Label>
         <Input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          id="username"
+          value={username}
+          className="text-base"
+          onChange={(e) => setUsername(e.target.value)}
           required
-          autoComplete="email"
+          autoComplete={isSignUp ? "username" : "username"}
         />
       </div>
+      {isSignUp && (
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="email" className="text-base">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+          />
+        </div>
+      )}
       <div className="flex flex-col gap-2">
-        <Label htmlFor="password">Mật khẩu</Label>
-        <Input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          minLength={8}
-          autoComplete={isSignUp ? "new-password" : "current-password"}
-        />
+        <Label htmlFor="password" className="text-base">Mật khẩu</Label>
+        <div className="relative">
+          <Input
+            id="password"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={8}
+            autoComplete={isSignUp ? "new-password" : "current-password"}
+            className="pr-10 text-base"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            tabIndex={-1}
+          >
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
       </div>
 
       {error && (
@@ -92,7 +125,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
       )}
 
       <Button type="submit" disabled={loading} className="mt-2">
-        {loading ? "Vui lòng đợi…" : isSignUp ? "Tạo tài khoản quản trị" : "Đăng nhập"}
+        {loading ? "Vui lòng đợi…" : isSignUp ? "Tạo tài khoản" : "Đăng nhập"}
       </Button>
     </form>
   )

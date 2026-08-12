@@ -108,7 +108,7 @@ export function InvoicesBrowser({ drivers, initialInvoices }: { drivers: Driver[
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 text-base">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Hóa đơn</h1>
@@ -125,7 +125,7 @@ export function InvoicesBrowser({ drivers, initialInvoices }: { drivers: Driver[
       <Card>
         <CardContent className="flex flex-col gap-4 py-4 sm:flex-row sm:items-center">
           <div className="flex flex-col gap-2 sm:w-52">
-            <label className="text-xs font-medium text-muted-foreground">Thời gian</label>
+            <label className="text-base font-medium text-muted-foreground">Thời gian</label>
             <Select value={period} onValueChange={(v) => setPeriod(v as Period)}>
               <SelectTrigger>
                 <SelectValue />
@@ -139,7 +139,7 @@ export function InvoicesBrowser({ drivers, initialInvoices }: { drivers: Driver[
             </Select>
           </div>
           <div className="flex flex-col gap-2 sm:w-52">
-            <label className="text-xs font-medium text-muted-foreground">Tài xế</label>
+            <label className="text-base font-medium text-muted-foreground">Tài xế</label>
             <Select value={driverId} onValueChange={setDriverId}>
               <SelectTrigger>
                 <SelectValue />
@@ -156,7 +156,7 @@ export function InvoicesBrowser({ drivers, initialInvoices }: { drivers: Driver[
           </div>
           <div className="flex flex-1 items-end justify-end">
             <div className="text-right">
-              <p className="text-xs font-medium text-muted-foreground">Tổng</p>
+              <p className="text-base font-medium text-muted-foreground">Tổng</p>
               <p className="font-mono text-2xl font-semibold">{total.toLocaleString("vi-VN")} ₫</p>
             </div>
           </div>

@@ -78,7 +78,7 @@ export function InvoiceForm({ items, invoiceId, initialData }: Props) {
   }
 
   return (
-    <form action={handleSubmit} className="flex flex-col gap-6">
+    <form action={handleSubmit} className="flex flex-col gap-6 text-base">
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Chuyến hàng</CardTitle>

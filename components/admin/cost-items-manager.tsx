@@ -58,7 +58,7 @@ export function CostItemsManager({ items }: { items: Item[] }) {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 text-base">
       <form onSubmit={handleAdd} className="flex flex-col gap-2 sm:flex-row sm:items-end">
         <div className="flex flex-1 flex-col gap-2">
           <label htmlFor="new-item" className="text-sm font-medium">

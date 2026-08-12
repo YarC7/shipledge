@@ -21,6 +21,7 @@ import { useState, useTransition } from "react"
 type Driver = {
   id: string
   name: string
+  username: string
   email: string
   createdAt: Date | string
 }
@@ -45,7 +46,7 @@ export function DriversManager({ drivers }: { drivers: Driver[] }) {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 text-base">
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Tài xế</h1>
@@ -70,6 +71,10 @@ export function DriversManager({ drivers }: { drivers: Driver[] }) {
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="name">Họ và tên</Label>
                   <Input id="name" name="name" required />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="username">Tên đăng nhập</Label>
+                  <Input id="username" name="username" required />
                 </div>
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="email">Email</Label>
@@ -102,6 +107,7 @@ export function DriversManager({ drivers }: { drivers: Driver[] }) {
             <TableHeader>
               <TableRow>
                 <TableHead>Họ tên</TableHead>
+                <TableHead>Tên đăng nhập</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead className="w-16 text-right">Xóa</TableHead>
               </TableRow>
@@ -110,6 +116,7 @@ export function DriversManager({ drivers }: { drivers: Driver[] }) {
               {drivers.map((driver) => (
                 <TableRow key={driver.id}>
                   <TableCell className="font-medium">{driver.name}</TableCell>
+                  <TableCell className="font-mono text-muted-foreground">{driver.username}</TableCell>
                   <TableCell className="text-muted-foreground">{driver.email}</TableCell>
                   <TableCell className="text-right">
                     <Button

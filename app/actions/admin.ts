@@ -52,7 +52,7 @@ export async function deleteCostItem(id: number) {
 export async function getDrivers() {
   await requireAdmin()
   return db
-    .select({ id: user.id, name: user.name, email: user.email, role: user.role, createdAt: user.createdAt })
+    .select({ id: user.id, name: user.name, username: user.username, email: user.email, role: user.role, createdAt: user.createdAt })
     .from(user)
     .where(eq(user.role, "driver"))
     .orderBy(asc(user.name))
@@ -61,17 +61,18 @@ export async function getDrivers() {
 export async function createDriver(formData: FormData) {
   await requireAdmin()
   const name = String(formData.get("name") ?? "").trim()
+  const username = String(formData.get("username") ?? "").trim()
   const email = String(formData.get("email") ?? "")
     .trim()
     .toLowerCase()
   const password = String(formData.get("password") ?? "")
 
-  if (!name || !email || !password) return { error: "Tất cả các trường là bắt buộc" }
+  if (!name || !username || !email || !password) return { error: "Tất cả các trường là bắt buộc" }
   if (password.length < 8) return { error: "Mật khẩu phải có ít nhất 8 ký tự" }
 
   try {
     const result = await auth.api.signUpEmail({
-      body: { name, email, password },
+      body: { name, email, password, username },
     })
     if (!result?.user?.id) return { error: "Không thể tạo tài xế" }
     await db.update(user).set({ role: "driver" }).where(eq(user.id, result.user.id))
@@ -79,7 +80,7 @@ export async function createDriver(formData: FormData) {
     return { success: true }
   } catch (err) {
     const message = err instanceof Error ? err.message : "Không thể tạo tài xế"
-    if (message.toLowerCase().includes("exist")) return { error: "Tài khoản email này đã tồn tại" }
+    if (message.toLowerCase().includes("exist")) return { error: "Tài khoản này đã tồn tại" }
     return { error: message }
   }
 }
