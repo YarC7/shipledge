@@ -1,11 +1,10 @@
-const CACHE_NAME = "shipledge-v2";
+const CACHE_NAME = "shipledge-v3";
 const STATIC_ASSETS = [
   "/",
   "/sign-in",
-  "/icon.svg",
-  "/vercel.svg",
-  "/icon-192.png",
-  "/icon-512.png",
+  "/shipledger-logo.png",
+  "/shipledger-logo-192.png",
+  "/shipledger-logo-512.png",
   "/manifest.json",
 ];
 
