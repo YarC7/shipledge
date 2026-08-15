@@ -20,7 +20,7 @@ export function DashboardShell({
         <div className="mx-auto flex w-full max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
           <Link href="/" className="flex items-center gap-2">
             <span className="flex h-8 w-8 items-center justify-center rounded-md bg-sidebar-primary font-mono text-xs font-bold text-sidebar-primary-foreground">
-              SL
+              <img src="/icon.svg" alt="" aria-hidden="true" className="h-4 w-4" />
             </span>
             <span className="text-base font-semibold tracking-tight">ShipLedger</span>
           </Link>

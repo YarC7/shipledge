@@ -19,11 +19,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/vercel.svg", type: "image/svg+xml" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
     ],
-    apple: "/apple-icon.png",
+    apple: "/icon-192.png",
   },
 }
 
@@ -40,12 +42,15 @@ export default function RootLayout({
   return (
     <html lang="vi" className={`bg-background ${inter.variable} ${jetbrainsMono.variable}`}>
       <head>
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/vercel.svg" type="image/svg+xml" />
+        <link rel="mask-icon" href="/vercel.svg" color="#000000" />
         <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png" />
         <link rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png" />
-        <link rel="apple-touch-icon" href="/apple-icon.png" />
+        <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body className="font-sans antialiased">
         {children}
