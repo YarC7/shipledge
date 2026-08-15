@@ -3,6 +3,7 @@
 import { deleteInvoice, exportInvoicesCsv, getInvoiceDetail, getInvoicesForAdmin, type InvoiceFilter } from "@/app/actions/invoices"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { DateRangePicker, type DateRange } from "@/components/ui/date-range-picker"
 import {
   Dialog,
   DialogContent,
@@ -18,7 +19,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { periodLabel, periodRange, type Period } from "@/lib/period"
 import { Download, Pencil, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState, useTransition } from "react"
@@ -44,9 +44,32 @@ function formatDate(value: string) {
   return new Date(value + "T00:00:00").toLocaleDateString("vi-VN", { dateStyle: "medium" })
 }
 
-export function InvoicesBrowser({ drivers, initialInvoices }: { drivers: Driver[]; initialInvoices: Invoice[] }) {
+function parseISODate(value: string) {
+  const [year, month, day] = value.split("-").map(Number)
+  return new Date(year, month - 1, day)
+}
+
+function toISODate(date: Date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
+export function InvoicesBrowser({
+  drivers,
+  initialInvoices,
+  initialDateRange,
+}: {
+  drivers: Driver[]
+  initialInvoices: Invoice[]
+  initialDateRange: { from: string; to: string }
+}) {
   const router = useRouter()
-  const [period, setPeriod] = useState<Period>("month")
+  const [dateRange, setDateRange] = useState<DateRange>(() => ({
+    from: parseISODate(initialDateRange.from),
+    to: parseISODate(initialDateRange.to),
+  }))
   const [driverId, setDriverId] = useState<string>("all")
   const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices)
   const [isPending, startTransition] = useTransition()
@@ -55,9 +78,10 @@ export function InvoicesBrowser({ drivers, initialInvoices }: { drivers: Driver[
   const [detailOpen, setDetailOpen] = useState(false)
 
   const filter: InvoiceFilter = useMemo(() => {
-    const { from, to } = periodRange(period)
+    const from = dateRange.from ? toISODate(dateRange.from) : undefined
+    const to = dateRange.to ? toISODate(dateRange.to) : undefined
     return { driverId, from, to }
-  }, [period, driverId])
+  }, [dateRange, driverId])
 
   useEffect(() => {
     startTransition(async () => {
@@ -97,7 +121,14 @@ export function InvoicesBrowser({ drivers, initialInvoices }: { drivers: Driver[
       const a = document.createElement("a")
       const driverPart = driverId === "all" ? "all-drivers" : drivers.find((d) => d.id === driverId)?.name ?? "driver"
       a.href = url
-      a.download = `invoices-${driverPart}-${period}.csv`.replace(/\s+/g, "-").toLowerCase()
+      const rangePart = dateRange.from
+        ? dateRange.to
+          ? `${toISODate(dateRange.from)}-to-${toISODate(dateRange.to)}`
+          : `from-${toISODate(dateRange.from)}`
+        : dateRange.to
+          ? `until-${toISODate(dateRange.to)}`
+          : "all-dates"
+      a.download = `invoices-${driverPart}-${rangePart}.csv`.replace(/\s+/g, "-").toLowerCase()
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
@@ -107,42 +138,82 @@ export function InvoicesBrowser({ drivers, initialInvoices }: { drivers: Driver[
     }
   }
 
+  function formatRangeLabel(range: DateRange) {
+    if (!range.from && !range.to) return "Tất cả"
+    const fmt = (d: Date) => d.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" })
+    if (range.from && range.to) {
+      if (toISODate(range.from) === toISODate(range.to)) return fmt(range.from)
+      return `${fmt(range.from)} – ${fmt(range.to)}`
+    }
+    if (range.from) return `Từ ${fmt(range.from)}`
+    return `Đến ${fmt(range.to!)}`
+  }
+
+  const datePresets = [
+    { label: "Hôm nay", value: { from: new Date(), to: new Date() } },
+    {
+      label: "Tuần này",
+      value: (() => {
+        const d = new Date()
+        const day = d.getDay()
+        const diff = (day + 6) % 7
+        const from = new Date(d)
+        from.setDate(d.getDate() - diff)
+        const to = new Date(from)
+        to.setDate(from.getDate() + 6)
+        return { from, to }
+      })(),
+    },
+    {
+      label: "Tháng này",
+      value: (() => {
+        const now = new Date()
+        const from = new Date(now.getFullYear(), now.getMonth(), 1)
+        const to = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+        return { from, to }
+      })(),
+    },
+    { label: "Tất cả", value: {} },
+  ]
+
   return (
     <div className="flex flex-col gap-6 text-base">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Hóa đơn</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {periodLabel(period)} &middot; {invoices.length} hóa đơn
+            {formatRangeLabel(dateRange)} &middot; {invoices.length} hóa đơn
           </p>
         </div>
-        <Button onClick={handleExport} disabled={exporting || invoices.length === 0} className="gap-2 sm:self-end">
+        <Button
+          onClick={handleExport}
+          disabled={exporting || invoices.length === 0}
+          className="gap-2 sm:self-end"
+          data-tour="admin-invoice-export"
+        >
           <Download className="h-4 w-4" />
           {exporting ? "Đang xuất…" : "Xuất CSV"}
         </Button>
       </div>
 
       <Card>
-        <CardContent className="flex flex-col gap-4 py-4 sm:flex-row sm:items-center">
-          <div className="flex flex-col gap-2 sm:w-52">
-            <label className="text-base font-medium text-muted-foreground">Thời gian</label>
-            <Select value={period} onValueChange={(v) => setPeriod(v as Period)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="day">Hôm nay</SelectItem>
-                <SelectItem value="week">Tuần này</SelectItem>
-                <SelectItem value="month">Tháng này</SelectItem>
-                <SelectItem value="all">Tất cả</SelectItem>
-              </SelectContent>
-            </Select>
+        <CardContent className="flex flex-col gap-4 py-4 sm:flex-row sm:items-end">
+          <div className="flex flex-1 flex-col gap-2" data-tour="admin-invoice-filter">
+            <label className="text-sm font-medium text-muted-foreground">Thời gian</label>
+            <DateRangePicker
+              value={dateRange}
+              onChange={setDateRange}
+              presets={datePresets}
+              className="w-full"
+            />
           </div>
-          <div className="flex flex-col gap-2 sm:w-52">
-            <label className="text-base font-medium text-muted-foreground">Tài xế</label>
-            <Select value={driverId} onValueChange={setDriverId}>
-              <SelectTrigger>
-                <SelectValue />
+          <div className="flex flex-1 flex-col gap-2">
+            <label className="text-sm font-medium text-muted-foreground">Tài xế</label>
+            <Select value={driverId} onValueChange={(value) => value && setDriverId(value)}>
+              <SelectTrigger className="w-full h-10">
+                <SelectValue>
+                  {driverId === "all" ? "Tất cả tài xế" : drivers.find((d) => d.id === driverId)?.name ?? "Tất cả tài xế"}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tất cả tài xế</SelectItem>
@@ -154,16 +225,16 @@ export function InvoicesBrowser({ drivers, initialInvoices }: { drivers: Driver[
               </SelectContent>
             </Select>
           </div>
-          <div className="flex flex-1 items-end justify-end">
+          <div className="flex items-end justify-end sm:ml-auto">
             <div className="text-right">
-              <p className="text-base font-medium text-muted-foreground">Tổng</p>
+              <p className="text-sm font-medium text-muted-foreground">Tổng</p>
               <p className="font-mono text-2xl font-semibold">{total.toLocaleString("vi-VN")} ₫</p>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <div className="overflow-hidden rounded-lg border border-border bg-card">
+      <div className="overflow-hidden rounded-lg border border-border bg-card" data-tour="admin-invoice-table">
         <Table>
           <TableHeader>
             <TableRow>

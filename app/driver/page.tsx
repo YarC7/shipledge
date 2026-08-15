@@ -37,7 +37,11 @@ export default async function DriverHomePage() {
             {invoices.length} hóa đơn &middot; {monthTotal.toLocaleString("vi-VN")} ₫ tháng này
           </p>
         </div>
-        <Link href="/driver/new" className={cn(buttonVariants({ variant: "default", size: "default" }), "gap-2")}>
+        <Link
+          href="/driver/new"
+          data-tour="driver-create-invoice"
+          className={cn(buttonVariants({ variant: "default", size: "default" }), "gap-2")}
+        >
           <Plus className="h-4 w-4" />
           <span className="hidden sm:inline">Tạo mới</span>
         </Link>
@@ -48,7 +52,7 @@ export default async function DriverHomePage() {
           Bạn chưa gửi hóa đơn nào.
         </p>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-border bg-card">
+        <div className="overflow-hidden rounded-lg border border-border bg-card" data-tour="driver-invoice-list">
           <Table>
             <TableHeader>
               <TableRow>

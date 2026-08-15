@@ -1,4 +1,5 @@
 import { SignOutButton } from "@/components/sign-out-button"
+import { ProductTour } from "@/components/product-tour"
 import type { SessionUser } from "@/lib/session"
 import Link from "next/link"
 
@@ -29,6 +30,7 @@ export function DashboardShell({
               <Link
                 key={item.href}
                 href={item.href}
+                data-tour={item.href === "/admin/drivers" ? "admin-drivers-nav" : item.href === "/admin/items" ? "admin-items-nav" : undefined}
                 className="rounded-md px-3 py-1.5 text-sm font-medium text-sidebar-foreground/75 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
               >
                 {item.label}
@@ -41,6 +43,7 @@ export function DashboardShell({
               <p className="text-sm font-medium leading-tight">{user.name}</p>
               <p className="text-xs capitalize text-sidebar-foreground/60">{user.role}</p>
             </div>
+            <ProductTour role={user.role === "admin" ? "admin" : "driver"} />
             <SignOutButton />
           </div>
         </div>
@@ -50,6 +53,7 @@ export function DashboardShell({
             <Link
               key={item.href}
               href={item.href}
+              data-tour={item.href === "/admin/drivers" ? "admin-drivers-nav" : item.href === "/admin/items" ? "admin-items-nav" : undefined}
               className="rounded-md px-3 py-1.5 text-sm font-medium text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-foreground"
             >
               {item.label}

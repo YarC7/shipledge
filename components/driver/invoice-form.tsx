@@ -69,7 +69,7 @@ export function InvoiceForm({ items, invoiceId, initialData }: Props) {
 
   if (items.length === 0) {
     return (
-      <Card>
+      <Card data-tour="driver-invoice-reference">
         <CardContent className="py-10 text-center text-sm text-muted-foreground">
           Quản trị viên chưa thiết lập chi phí nào. Vui lòng quay lại sau.
         </CardContent>
@@ -79,7 +79,7 @@ export function InvoiceForm({ items, invoiceId, initialData }: Props) {
 
   return (
     <form action={handleSubmit} className="flex flex-col gap-6 text-base">
-      <Card>
+      <Card data-tour="driver-invoice-costs">
         <CardHeader>
           <CardTitle className="text-base">Chuyến hàng</CardTitle>
         </CardHeader>
@@ -158,7 +158,7 @@ export function InvoiceForm({ items, invoiceId, initialData }: Props) {
         <Button type="button" variant="ghost" onClick={() => router.push("/driver")}>
           Hủy
         </Button>
-        <Button type="submit" disabled={isPending}>
+        <Button type="submit" disabled={isPending} data-tour="driver-invoice-submit">
           {isPending ? "Đang lưu…" : isEdit ? "Cập nhật" : "Gửi hóa đơn"}
         </Button>
       </div>

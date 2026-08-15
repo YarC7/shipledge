@@ -66,12 +66,13 @@ export function CostItemsManager({ items }: { items: Item[] }) {
           </label>
           <Input
             id="new-item"
+            data-tour="admin-item-name"
             placeholder="VD: Xăng, Vé cầu đường, Bãi đỗ xe"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
           />
         </div>
-        <Button type="submit" disabled={isPending} className="gap-2">
+        <Button type="submit" disabled={isPending} className="gap-2" data-tour="admin-add-item">
           <Plus className="h-4 w-4" />
           Thêm
         </Button>

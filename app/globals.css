@@ -175,3 +175,128 @@
     letter-spacing: -0.01em;
   }
 }
+
+/* Date filters use a quiet editorial surface with a soft lime selection state. */
+.shipledger-date-picker {
+  color-scheme: light;
+}
+
+.shipledger-date-picker .rdp-root {
+  width: 100%;
+  --rdp-accent-color: #111111;
+  --rdp-accent-background-color: #ecfccb;
+}
+
+.shipledger-date-picker .rdp-button_previous,
+.shipledger-date-picker .rdp-button_next {
+  display: flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dc2626 !important;
+  border-radius: 0.75rem;
+  background: #dc2626 !important;
+  color: #ffffff !important;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.shipledger-date-picker .rdp-button_previous:hover,
+.shipledger-date-picker .rdp-button_next:hover {
+  border-color: #b91c1c !important;
+  background: #b91c1c !important;
+}
+
+.shipledger-date-picker .rdp-button_previous svg,
+.shipledger-date-picker .rdp-button_next svg {
+  height: 1rem;
+  width: 1rem;
+  fill: currentColor;
+}
+
+.shipledger-date-picker .rdp-day_button {
+  position: relative;
+  z-index: 1;
+}
+
+.shipledger-date-picker .rdp-selected .rdp-day_button {
+  color: var(--foreground);
+}
+
+/* Driver.js follows ShipLedger's monochrome UI with one clear guide accent. */
+.driver-popover.shipledger-tour {
+  width: min(360px, calc(100vw - 32px));
+  min-width: 0;
+  max-width: 360px;
+  border: 1px solid #d9f99d;
+  border-radius: 16px;
+  background: #111111 !important;
+  color: #ffffff !important;
+  box-shadow: 0 18px 50px rgb(0 0 0 / 24%);
+}
+
+.driver-popover.shipledger-tour .driver-popover-title {
+  color: #d9f99d !important;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.driver-popover.shipledger-tour .driver-popover-description {
+  color: #f4f4f5 !important;
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.driver-popover.shipledger-tour .driver-popover-progress-text {
+  color: #d4d4d8 !important;
+}
+
+.driver-popover.shipledger-tour .driver-popover-prev-btn,
+.driver-popover.shipledger-tour .driver-popover-next-btn {
+  border-radius: 8px;
+  border: 0;
+  text-shadow: none;
+  font-size: 0.8125rem;
+}
+
+.driver-popover.shipledger-tour .driver-popover-prev-btn {
+  color: #ffffff !important;
+  background: #3f3f46 !important;
+}
+
+.driver-popover.shipledger-tour .driver-popover-next-btn {
+  color: #111111 !important;
+  background: #d9f99d !important;
+}
+
+.driver-popover.shipledger-tour .driver-popover-close-btn {
+  color: #ffffff !important;
+}
+
+.driver-popover.shipledger-tour .driver-popover-arrow {
+  border-top-color: #111111;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+}
+
+.driver-popover.shipledger-tour .driver-popover-arrow-side-top {
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: #111111;
+  border-left-color: transparent;
+}
+
+.driver-popover.shipledger-tour .driver-popover-arrow-side-left {
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-left-color: #111111;
+}
+
+.driver-popover.shipledger-tour .driver-popover-arrow-side-right {
+  border-top-color: transparent;
+  border-right-color: #111111;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+}

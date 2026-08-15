@@ -53,11 +53,11 @@ export function DriversManager({ drivers }: { drivers: Driver[] }) {
           <p className="mt-1 text-sm text-muted-foreground">Tạo và quản lý tài khoản tài xế.</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button className="gap-2">
-              <UserPlus className="h-4 w-4" />
-              <span className="hidden sm:inline">Thêm tài xế</span>
-            </Button>
+          <DialogTrigger
+            render={<Button className="gap-2" data-tour="admin-add-driver" />}
+          >
+            <UserPlus className="h-4 w-4" />
+            <span className="hidden sm:inline">Thêm tài xế</span>
           </DialogTrigger>
           <DialogContent>
             <form action={handleCreate}>
@@ -102,7 +102,7 @@ export function DriversManager({ drivers }: { drivers: Driver[] }) {
           Chưa có tài xế nào. Thêm tài xế đầu tiên để bắt đầu.
         </p>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-border bg-card">
+        <div className="overflow-hidden rounded-lg border border-border bg-card" data-tour="admin-driver-list">
           <Table>
             <TableHeader>
               <TableRow>

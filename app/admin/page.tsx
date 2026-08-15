@@ -7,5 +7,5 @@ export default async function AdminInvoicesPage() {
   const { from, to } = periodRange("month")
   const initialInvoices = await getInvoicesForAdmin({ driverId: "all", from, to })
 
-  return <InvoicesBrowser drivers={drivers} initialInvoices={initialInvoices as never} />
+  return <InvoicesBrowser drivers={drivers} initialInvoices={initialInvoices as never} initialDateRange={{ from: from!, to: to! }} />
 }

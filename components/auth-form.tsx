@@ -28,7 +28,10 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
 
     try {
       if (isSignUp) {
-        const { data, error } = await authClient.signUp.email({ email, password, name, username })
+        const signUpInput = { email, password, name, username }
+        const { data, error } = await authClient.signUp.email(
+          signUpInput as Parameters<typeof authClient.signUp.email>[0],
+        )
         if (error) {
           setError(error.message ?? "Không thể tạo tài khoản")
           setLoading(false)
@@ -66,16 +69,16 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-xl">
       {isSignUp && (
         <div className="flex flex-col gap-2">
-          <Label htmlFor="name" className="text-base">Họ và tên</Label>
+          <Label htmlFor="name" className="text-lg">Họ và tên</Label>
           <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required autoComplete="name" />
         </div>
       )}
       <div className="flex flex-col gap-2">
-        <Label htmlFor="username" className="text-base">Tên đăng nhập</Label>
+        <Label htmlFor="username" className="text-lg">Tên đăng nhập</Label>
         <Input
           id="username"
           value={username}
-          className="text-base"
+          className="text-lg"
           onChange={(e) => setUsername(e.target.value)}
           required
           autoComplete={isSignUp ? "username" : "username"}
@@ -83,7 +86,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
       </div>
       {isSignUp && (
         <div className="flex flex-col gap-2">
-          <Label htmlFor="email" className="text-base">Email</Label>
+          <Label htmlFor="email" className="text-lg">Email</Label>
           <Input
             id="email"
             type="email"
@@ -95,7 +98,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
         </div>
       )}
       <div className="flex flex-col gap-2">
-        <Label htmlFor="password" className="text-base">Mật khẩu</Label>
+        <Label htmlFor="password" className="text-lg">Mật khẩu</Label>
         <div className="relative">
           <Input
             id="password"
@@ -105,7 +108,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
             required
             minLength={8}
             autoComplete={isSignUp ? "new-password" : "current-password"}
-            className="pr-10 text-base"
+            className="pr-10 text-lg"
           />
           <button
             type="button"
