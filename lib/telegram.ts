@@ -50,10 +50,14 @@ export async function saveSetting(key: string, value: string | null) {
 }
 
 /**
- * Sends a plain-text message to every configured Telegram chat.
+ * Sends a text message to every configured Telegram chat.
+ * Pass { parseMode: "HTML" } to render <a href> links as clickable magic links.
  * Never throws — returns { ok, error } so callers can log and continue.
  */
-export async function sendTelegramMessage(text: string): Promise<SendTelegramResult> {
+export async function sendTelegramMessage(
+  text: string,
+  opts: { parseMode?: "HTML" } = {}
+): Promise<SendTelegramResult> {
   const cfg = await getTelegramSettings()
   if (!cfg.enabled) return { ok: false, skipped: true, error: "Kênh Telegram đang tắt" }
   if (!cfg.botToken) return { ok: false, skipped: true, error: "Chưa có bot token" }
@@ -65,7 +69,12 @@ export async function sendTelegramMessage(text: string): Promise<SendTelegramRes
         const res = await fetch(`https://api.telegram.org/bot${cfg.botToken}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_id: chatId, text }),
+          body: JSON.stringify({
+            chat_id: chatId,
+            text,
+            parse_mode: opts.parseMode,
+            link_preview_options: { is_disabled: true },
+          }),
           signal: AbortSignal.timeout(10_000),
         })
         if (!res.ok) {

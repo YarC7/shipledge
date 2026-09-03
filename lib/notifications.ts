@@ -46,12 +46,17 @@ function appBaseUrl() {
   )
 }
 
+/** Escapes a value for use inside a Telegram HTML (parse_mode=HTML) message. */
+function escapeHtml(value: string) {
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+}
+
 /**
  * Fired right after a driver submits an invoice:
  * notifies every admin in-app, gives the driver a confirmation, and forwards
  * the news to the configured external channel (Telegram) after the response.
  */
-export async function notifyNewInvoice(invoice: InvoiceLike) {
+export async function notifyNewInvoice(invoice: InvoiceLike, entries: { itemName: string; amount: string }[] = []) {
   const admins = await db.select({ id: user.id }).from(user).where(eq(user.role, "admin"))
 
   const body = `${invoice.driverName} · ${invoice.shipReference} · ${formatVnd(invoice.total)} ₫`
@@ -75,17 +80,26 @@ export async function notifyNewInvoice(invoice: InvoiceLike) {
     }),
   ])
 
-  const text = [
-    `📄 Hóa đơn mới`,
-    `Tài xế: ${invoice.driverName}`,
-    `Mã chuyến hàng: ${invoice.shipReference}`,
-    `Tổng: ${formatVnd(invoice.total)} ₫`,
-    `Xem chi tiết: ${appBaseUrl()}/admin/invoices/${invoice.id}`,
-  ].join("\n")
+  const lines = [
+    "📄 Hóa đơn mới",
+    `Tài xế: ${escapeHtml(invoice.driverName)}`,
+    `Mã chuyến hàng: ${escapeHtml(invoice.shipReference)}`,
+  ]
+  if (entries.length > 0) {
+    lines.push("Chi phí:")
+    for (const e of entries) {
+      lines.push(`• ${escapeHtml(e.itemName)}: ${formatVnd(e.amount)} ₫`)
+    }
+  }
+  lines.push(`Tổng: ${formatVnd(invoice.total)} ₫`)
+  lines.push(
+    `<a href="${appBaseUrl()}/admin/invoices/${invoice.id}">Xem chi tiết hóa đơn #${invoice.id}</a>`
+  )
+  const text = lines.join("\n")
 
   after(async () => {
     try {
-      const result = await sendTelegramMessage(text)
+      const result = await sendTelegramMessage(text, { parseMode: "HTML" })
       if (!result.ok && !result.skipped) console.error("[telegram] send failed:", result.error)
     } catch (err) {
       console.error("[telegram] send threw:", err)

@@ -54,14 +54,17 @@ export async function submitInvoice(formData: FormData) {
   }
 
   try {
-    await notifyNewInvoice({
-      id: invoice.id,
-      driverId: u.id,
-      driverName: u.name,
-      shipReference,
-      invoiceDate,
-      total: String(Math.round(total)),
-    })
+    await notifyNewInvoice(
+      {
+        id: invoice.id,
+        driverId: u.id,
+        driverName: u.name,
+        shipReference,
+        invoiceDate,
+        total: String(Math.round(total)),
+      },
+      entries.map((e) => ({ itemName: e.itemName, amount: e.amount }))
+    )
   } catch (err) {
     console.error("[notify] submitInvoice failed:", err)
   }
