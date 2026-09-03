@@ -14,6 +14,7 @@ export default async function DriverLayout({ children }: { children: React.React
     { href: "/driver", label: "Hóa đơn của tôi" },
     { href: "/driver/notifications", label: "Thông báo", badge: unread },
     { href: "/driver/new", label: "Tạo hóa đơn" },
+    { href: "/driver/settings", label: "Cài đặt" },
   ]
 
   return (
