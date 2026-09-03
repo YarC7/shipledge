@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/db"
 import { costItems, invoiceEntries, invoices, user } from "@/lib/db/schema"
+import { notifyInvoiceChanged, notifyNewInvoice } from "@/lib/notifications"
 import { requireAdmin, requireUser } from "@/lib/session"
 import { and, asc, desc, eq, gte, lte } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
@@ -50,6 +51,19 @@ export async function submitInvoice(formData: FormData) {
 
   if (entries.length > 0) {
     await db.insert(invoiceEntries).values(entries.map((e) => ({ invoiceId: invoice.id, ...e })))
+  }
+
+  try {
+    await notifyNewInvoice({
+      id: invoice.id,
+      driverId: u.id,
+      driverName: u.name,
+      shipReference,
+      invoiceDate,
+      total: String(Math.round(total)),
+    })
+  } catch (err) {
+    console.error("[notify] submitInvoice failed:", err)
   }
 
   revalidatePath("/driver")
@@ -114,6 +128,18 @@ export async function updateInvoice(id: number, formData: FormData) {
     await db.insert(invoiceEntries).values(entries.map((e) => ({ invoiceId: id, ...e })))
   }
 
+  if (u.role === "admin" && existing.driverId !== u.id) {
+    try {
+      await notifyInvoiceChanged(
+        { ...existing, shipReference, invoiceDate, total: String(Math.round(total)) },
+        u.name,
+        "invoice_updated"
+      )
+    } catch (err) {
+      console.error("[notify] updateInvoice failed:", err)
+    }
+  }
+
   revalidatePath("/driver")
   revalidatePath("/admin")
   return { success: true }
@@ -125,6 +151,14 @@ export async function deleteInvoice(id: number) {
   const [existing] = await db.select().from(invoices).where(eq(invoices.id, id)).limit(1)
   if (!existing) return { error: "Hóa đơn không tồn tại" }
   if (existing.driverId !== u.id && u.role !== "admin") return { error: "Không có quyền xóa" }
+
+  if (u.role === "admin" && existing.driverId !== u.id) {
+    try {
+      await notifyInvoiceChanged(existing, u.name, "invoice_deleted")
+    } catch (err) {
+      console.error("[notify] deleteInvoice failed:", err)
+    }
+  }
 
   await db.delete(invoiceEntries).where(eq(invoiceEntries.invoiceId, id))
   await db.delete(invoices).where(eq(invoices.id, id))

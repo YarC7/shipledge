@@ -85,3 +85,27 @@ export const invoiceEntries = pgTable("invoice_entries", {
   itemName: text("itemName").notNull(),
   amount: numeric("amount", { precision: 12, scale: 2 }).notNull().default("0"),
 })
+
+// ----- Notifications -----
+
+// In-app notifications addressed to a single user (driver or admin).
+export const notifications = pgTable("notifications", {
+  id: serial("id").primaryKey(),
+  userId: text("userId").notNull(),
+  type: text("type").notNull().default("info"),
+  title: text("title").notNull(),
+  body: text("body"),
+  link: text("link"),
+  invoiceId: integer("invoiceId"),
+  readAt: timestamp("readAt"),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+})
+
+// ----- Settings -----
+
+// Key-value app settings, e.g. Telegram delivery config.
+export const settings = pgTable("settings", {
+  key: text("key").primaryKey(),
+  value: text("value"),
+  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+})

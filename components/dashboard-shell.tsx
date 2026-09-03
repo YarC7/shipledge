@@ -3,7 +3,16 @@ import { ProductTour } from "@/components/product-tour"
 import type { SessionUser } from "@/lib/session"
 import Link from "next/link"
 
-type NavItem = { href: string; label: string }
+type NavItem = { href: string; label: string; badge?: number }
+
+function NavBadge({ count }: { count?: number }) {
+  if (!count || count <= 0) return null
+  return (
+    <span className="ml-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-sidebar-primary px-1.5 text-xs font-semibold text-sidebar-primary-foreground">
+      {count}
+    </span>
+  )
+}
 
 export function DashboardShell({
   user,
@@ -31,9 +40,10 @@ export function DashboardShell({
                 key={item.href}
                 href={item.href}
                 data-tour={item.href === "/admin/drivers" ? "admin-drivers-nav" : item.href === "/admin/items" ? "admin-items-nav" : undefined}
-                className="rounded-md px-3 py-1.5 text-sm font-medium text-sidebar-foreground/75 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                className="flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-sidebar-foreground/75 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
               >
                 {item.label}
+                <NavBadge count={item.badge} />
               </Link>
             ))}
           </nav>
@@ -54,9 +64,10 @@ export function DashboardShell({
               key={item.href}
               href={item.href}
               data-tour={item.href === "/admin/drivers" ? "admin-drivers-nav" : item.href === "/admin/items" ? "admin-items-nav" : undefined}
-              className="rounded-md px-3 py-1.5 text-sm font-medium text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+              className="flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-foreground"
             >
               {item.label}
+              <NavBadge count={item.badge} />
             </Link>
           ))}
         </nav>
