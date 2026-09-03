@@ -50,7 +50,7 @@ export async function notifyNewInvoice(invoice: InvoiceLike) {
         type: "new_invoice",
         title: "Hóa đơn mới",
         body,
-        link: "/admin",
+        link: `/admin/invoices/${invoice.id}`,
         invoiceId: invoice.id,
       })
     ),
@@ -58,7 +58,7 @@ export async function notifyNewInvoice(invoice: InvoiceLike) {
       type: "new_invoice",
       title: "Đã gửi hóa đơn",
       body: `${invoice.shipReference} · ${formatVnd(invoice.total)} ₫`,
-      link: "/driver",
+      link: `/driver/invoices/${invoice.id}`,
       invoiceId: invoice.id,
     }),
   ])
@@ -96,7 +96,7 @@ export async function notifyInvoiceChanged(
     type: kind,
     title,
     body,
-    link: "/driver",
+    link: `/driver/invoices/${invoice.id}`,
     invoiceId: invoice.id,
   })
 }
