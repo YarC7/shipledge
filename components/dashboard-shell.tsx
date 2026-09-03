@@ -1,7 +1,12 @@
+"use client"
+
 import { SignOutButton } from "@/components/sign-out-button"
 import { ProductTour } from "@/components/product-tour"
+import { Button } from "@/components/ui/button"
 import type { SessionUser } from "@/lib/session"
+import { Menu, X } from "lucide-react"
 import Link from "next/link"
+import { useState } from "react"
 
 type NavItem = { href: string; label: string; badge?: number }
 
@@ -14,6 +19,10 @@ function NavBadge({ count }: { count?: number }) {
   )
 }
 
+function tourTarget(href: string) {
+  return href === "/admin/drivers" ? "admin-drivers-nav" : href === "/admin/items" ? "admin-items-nav" : undefined
+}
+
 export function DashboardShell({
   user,
   nav,
@@ -23,6 +32,8 @@ export function DashboardShell({
   nav: NavItem[]
   children: React.ReactNode
 }) {
+  const [menuOpen, setMenuOpen] = useState(false)
+
   return (
     <div className="flex min-h-dvh flex-col bg-background">
       <header className="sticky top-0 z-20 border-b border-sidebar-border bg-sidebar text-sidebar-foreground">
@@ -39,7 +50,7 @@ export function DashboardShell({
               <Link
                 key={item.href}
                 href={item.href}
-                data-tour={item.href === "/admin/drivers" ? "admin-drivers-nav" : item.href === "/admin/items" ? "admin-items-nav" : undefined}
+                data-tour={tourTarget(item.href)}
                 className="flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-sidebar-foreground/75 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
               >
                 {item.label}
@@ -55,22 +66,47 @@ export function DashboardShell({
             </div>
             <ProductTour role={user.role === "admin" ? "admin" : "driver"} />
             <SignOutButton />
+
+            <div className="relative sm:hidden">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label="Mở menu"
+                aria-haspopup="menu"
+                aria-expanded={menuOpen}
+                onClick={() => setMenuOpen((open) => !open)}
+                className="text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+              >
+                {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+
+              {menuOpen && (
+                <>
+                  <div className="fixed inset-0 z-30" onClick={() => setMenuOpen(false)} aria-hidden="true" />
+                  <div
+                    role="menu"
+                    className="absolute right-0 z-40 mt-2 w-64 rounded-xl border border-sidebar-border bg-sidebar p-1.5 shadow-lg"
+                  >
+                    {nav.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        role="menuitem"
+                        data-tour={tourTarget(item.href)}
+                        onClick={() => setMenuOpen(false)}
+                        className="flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground/75 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                      >
+                        <span>{item.label}</span>
+                        <NavBadge count={item.badge} />
+                      </Link>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
-
-        <nav className="flex items-center gap-1 border-t border-sidebar-border px-4 py-2 sm:hidden">
-          {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              data-tour={item.href === "/admin/drivers" ? "admin-drivers-nav" : item.href === "/admin/items" ? "admin-items-nav" : undefined}
-              className="flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-foreground"
-            >
-              {item.label}
-              <NavBadge count={item.badge} />
-            </Link>
-          ))}
-        </nav>
       </header>
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 sm:py-8">{children}</main>
