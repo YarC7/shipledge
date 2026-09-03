@@ -34,6 +34,18 @@ function formatVnd(value: string | number) {
   return Number(value).toLocaleString("vi-VN")
 }
 
+/** Public base URL of the app — mirrors lib/auth.ts fallbacks. */
+function appBaseUrl() {
+  return (
+    process.env.BETTER_AUTH_URL ??
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "http://localhost:3000")
+  )
+}
+
 /**
  * Fired right after a driver submits an invoice:
  * notifies every admin in-app, gives the driver a confirmation, and forwards
@@ -68,6 +80,7 @@ export async function notifyNewInvoice(invoice: InvoiceLike) {
     `Tài xế: ${invoice.driverName}`,
     `Mã chuyến hàng: ${invoice.shipReference}`,
     `Tổng: ${formatVnd(invoice.total)} ₫`,
+    `Xem chi tiết: ${appBaseUrl()}/admin/invoices/${invoice.id}`,
   ].join("\n")
 
   after(async () => {
